@@ -1,4 +1,4 @@
-module crudapp
+module github.com/kiper01/Post-CRUD
 
 go 1.21.4
 

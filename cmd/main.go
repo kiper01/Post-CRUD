@@ -24,5 +24,10 @@ func main() {
 
 	fmt.Println("Connection successful")
 
-	migrations.RunMigrations()
+	// Применение миграции от gpt
+	err = migrations.ApplyMigration(db)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 }

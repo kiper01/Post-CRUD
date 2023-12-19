@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/kiper01/Post-CRUD/app/migrations"
+	"github.com/kiper01/Post-CRUD/cmd/app/migrations"
 	_ "github.com/lib/pq"
 )
 

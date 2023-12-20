@@ -64,11 +64,11 @@ func main() {
 		log.Fatalf("Failed to execute migration: %v", err)
 	}
 
-	repo := repository.NewPostStatsRepository(dbPool)
-	postStatsService := service.NewPostStatsService(repo)
+	repo := repository.NewPostInfoRepository(dbPool)
+	postInfoService := service.NewPostInfoService(repo)
 
 	s := grpc.NewServer()
-	pb.RegisterPostStatsServer(s, postStatsService)
+	pb.RegisterPostInfoServer(s, postInfoService)
 
 	log.Printf("Server listening at %v", lis.Addr())
 

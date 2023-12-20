@@ -1,6 +1,6 @@
 package model
 
-type PostlValue struct {
+type PostValue struct {
 	ID    string
 	Code  uint32
 	Name  string

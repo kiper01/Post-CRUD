@@ -8,6 +8,9 @@ import (
 	"os"
 
 	"github.com/kiper01/Post-CRUD/internal/app/migrations"
+	"github.com/kiper01/Post-CRUD/internal/app/repository"
+	"github.com/kiper01/Post-CRUD/internal/app/service"
+	pb "github.com/kiper01/Post-CRUD/internal/proto"
 	"github.com/kiper01/Post-CRUD/pkg/database"
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"

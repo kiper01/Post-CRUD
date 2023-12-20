@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+package postcrud;
+
+option go_package = "github.com/kiper01/Post-CRUD";
+
+service PostInfoService {
+    rpc AddPostValue(AddPostValueRequest) returns (AddPostValueResponse);
+}
+
+message PostValue {
+    string id = 1;
+    string code = 2;
+    string name = 3;
+    string river = 4;
+}
+
+message AddPostValueRequest {
+    string code = 1;
+    string name = 2;
+    string river = 3;
+}
+
+message AddPostValueResponse {
+    PostValue post_value = 1;
+}

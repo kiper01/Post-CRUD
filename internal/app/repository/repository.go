@@ -18,7 +18,7 @@ func NewPostInfoRepository(pool *pgxpool.Pool) *PostInfoRepository {
 
 func (r *PostInfoRepository) AddPostValue(ctx context.Context, value model.PostValue) error {
 
-	sql := `INSERT INTO post (id, code, type, name, river)
+	sql := `INSERT INTO post (id, code, name, river)
             VALUES ($1, $2, $3, $4)
             ON CONFLICT (id) DO NOTHING;`
 

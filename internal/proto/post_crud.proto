@@ -1,7 +1,5 @@
 syntax = "proto3";
 
-import "google/protobuf/timestamp.proto";
-
 package postcrud;
 
 option go_package = "github.com/kiper01/Post-CRUD";
@@ -12,13 +10,13 @@ service PostInfoService {
 
 message PostValue {
     string id = 1;
-    string code = 2;
+    uint32 code = 2;
     string name = 3;
     string river = 4;
 }
 
 message AddPostValueRequest {
-    string code = 1;
+    uint32 code = 1;
     string name = 2;
     string river = 3;
 }

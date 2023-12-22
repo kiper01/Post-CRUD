@@ -6,6 +6,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/kiper01/Post-CRUD/internal/app/model"
 	"github.com/kiper01/Post-CRUD/internal/app/repository"
+	pb "github.com/kiper01/Post-CRUD/internal/proto"
 )
 
 type PostInfoRepository interface {
@@ -17,7 +18,7 @@ type PostInfoService struct {
 	pb.UnimplementedPostInfoServiceServer
 }
 
-func NewPostStatsService(repo *repository.PostInfoRepository) *PostInfoService {
+func NewPostInfoService(repo *repository.PostInfoRepository) *PostInfoService {
 	return &PostInfoService{repo: repo}
 }
 

@@ -71,7 +71,7 @@ func main() {
 	postInfoService := service.NewPostInfoService(repo)
 
 	s := grpc.NewServer()
-	pb.RegisterPostInfoServer(s, postInfoService)
+	pb.RegisterPostInfoServiceServer(s, postInfoService)
 
 	log.Printf("Server listening at %v", lis.Addr())
 

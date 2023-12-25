@@ -11,6 +11,8 @@ import (
 
 type PostInfoRepository interface {
 	AddPostValue(ctx context.Context, value model.PostValue) error
+	RemovePostValue(ctx context.Context, id string) error
+	UpdatePostValue(ctx context.Context, values []model.PostValue) error
 }
 
 type PostInfoService struct {
@@ -43,4 +45,49 @@ func (s *PostInfoService) AddPostValue(ctx context.Context, req *pb.AddPostValue
 			River: postValue.River,
 		},
 	}, nil
+}
+
+func (s *PostInfoService) RemovePostValue(ctx context.Context, req *pb.RemovePostValueRequest) (*pb.RemovePostValueResponse, error) {
+
+	err := s.repo.RemovePostValue(ctx, req.GetId())
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.RemovePostValueResponse{Success: true}, nil
+}
+
+func (s *PostInfoService) UpdatePostValue(ctx context.Context, req *pb.UpdatePostValueRequest) (*pb.UpdatePostValueResponse, error) {
+
+	var postValues []model.PostValue
+
+	for _, pv := range req.GetPostValues() {
+		postValues = append(postValues, model.PostValue{
+			ID:    pv.GetId(),
+			Code:  pv.GetCode(),
+			Name:  pv.GetName(),
+			River: pv.GetRiver(),
+		})
+	}
+
+	err := s.repo.UpdatePostValues(ctx, postValues)
+	if err != nil {
+		return nil, err
+	}
+
+	var updatedPostValues []*pb.PostValue
+	for _, pval := range postValues {
+		updatedPostValues = append(updatedPostValues, &pb.PostValue{
+			Id:    pval.ID,
+			Code:  pval.Code,
+			Name:  pval.Name,
+			River: pval.River,
+		})
+	}
+
+	return &pb.UpdatePostValueResponse{PostValues: updatedPostValues}, nil
+}
+
+func (s *PostInfoService) GetPostValuesByPage() {
+
 }

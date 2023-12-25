@@ -61,7 +61,7 @@ func (s *PostInfoService) UpdatePostValue(ctx context.Context, req *pb.UpdatePos
 
 	var postValues []model.PostValue
 
-	for _, pv := range req.GetPostValues() {
+	for _, pv := range req.GetPost() {
 		postValues = append(postValues, model.PostValue{
 			ID:    pv.GetId(),
 			Code:  pv.GetCode(),
@@ -85,7 +85,7 @@ func (s *PostInfoService) UpdatePostValue(ctx context.Context, req *pb.UpdatePos
 		})
 	}
 
-	return &pb.UpdatePostValueResponse{PostValues: updatedPostValues}, nil
+	return &pb.UpdatePostValueResponse{Post: updatedPostValues}, nil
 }
 
 func (s *PostInfoService) GetPostValuesByPage() {

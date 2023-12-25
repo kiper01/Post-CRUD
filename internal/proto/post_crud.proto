@@ -36,11 +36,11 @@ message RemovePostValueResponse {
 }
 
 message UpdatePostValueRequest {
-    repeated PostValue post = 1; 
+    repeated PostValue post_value = 1; 
 }
 
 message UpdatePostValueResponse {
-    repeated PostValue post = 1; 
+    repeated PostValue post_value = 1; 
 }
 
 message GetPostValuesRequest {
@@ -50,5 +50,5 @@ message GetPostValuesRequest {
 message GetPostValuesResponse {
     uint32 page = 1;
     uint32 max_page = 2;
-    repeated PostValue post = 3;
+    repeated PostValue post_value = 3;
 }

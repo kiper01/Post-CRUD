@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"math"
 
 	"github.com/google/uuid"
 	"github.com/kiper01/Post-CRUD/internal/app/model"
@@ -61,7 +62,7 @@ func (s *PostInfoService) UpdatePostValue(ctx context.Context, req *pb.UpdatePos
 
 	var postValues []model.PostValue
 
-	for _, pv := range req.GetPost() {
+	for _, pv := range req.GetPostValue() {
 		postValues = append(postValues, model.PostValue{
 			ID:    pv.GetId(),
 			Code:  pv.GetCode(),
@@ -85,9 +86,39 @@ func (s *PostInfoService) UpdatePostValue(ctx context.Context, req *pb.UpdatePos
 		})
 	}
 
-	return &pb.UpdatePostValueResponse{Post: updatedPostValues}, nil
+	return &pb.UpdatePostValueResponse{PostValue: updatedPostValues}, nil
 }
 
-func (s *PostInfoService) GetPostValuesByPage() {
+func (s *PostInfoService) GetPostValues(ctx context.Context, req *pb.GetPostValuesRequest) (*pb.GetPostValuesResponse, error) {
 
+	pageSize := 50
+
+	page := int(req.GetPage())
+	if page < 1 {
+		page = 1
+	}
+
+	postValues, totalCount, err := s.repo.GetPostValues(ctx, int(req.GetCode()), page, pageSize)
+	if err != nil {
+		return nil, err
+	}
+
+	var pbPostValues []*pb.PostValue
+
+	for _, pv := range postValues {
+		pbPostValues = append(pbPostValues, &pb.PostValue{
+			Id:    pv.ID,
+			Code:  pv.Code,
+			Name:  pv.Name,
+			River: pv.River,
+		})
+	}
+
+	maxPage := uint32(math.Ceil(float64(totalCount) / float64(pageSize)))
+
+	return &pb.GetPostValuesResponse{
+		Page:      uint32(page),
+		MaxPage:   maxPage,
+		PostValue: pbPostValues,
+	}, nil
 }

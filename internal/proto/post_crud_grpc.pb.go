@@ -22,6 +22,7 @@ const (
 	PostInfoService_AddPostValue_FullMethodName    = "/postcrud.PostInfoService/AddPostValue"
 	PostInfoService_RemovePostValue_FullMethodName = "/postcrud.PostInfoService/RemovePostValue"
 	PostInfoService_UpdatePostValue_FullMethodName = "/postcrud.PostInfoService/UpdatePostValue"
+	PostInfoService_GetPostValues_FullMethodName   = "/postcrud.PostInfoService/GetPostValues"
 )
 
 // PostInfoServiceClient is the client API for PostInfoService service.
@@ -31,6 +32,7 @@ type PostInfoServiceClient interface {
 	AddPostValue(ctx context.Context, in *AddPostValueRequest, opts ...grpc.CallOption) (*AddPostValueResponse, error)
 	RemovePostValue(ctx context.Context, in *RemovePostValueRequest, opts ...grpc.CallOption) (*RemovePostValueResponse, error)
 	UpdatePostValue(ctx context.Context, in *UpdatePostValueRequest, opts ...grpc.CallOption) (*UpdatePostValueResponse, error)
+	GetPostValues(ctx context.Context, in *GetPostValuesRequest, opts ...grpc.CallOption) (*GetPostValuesResponse, error)
 }
 
 type postInfoServiceClient struct {
@@ -68,6 +70,15 @@ func (c *postInfoServiceClient) UpdatePostValue(ctx context.Context, in *UpdateP
 	return out, nil
 }
 
+func (c *postInfoServiceClient) GetPostValues(ctx context.Context, in *GetPostValuesRequest, opts ...grpc.CallOption) (*GetPostValuesResponse, error) {
+	out := new(GetPostValuesResponse)
+	err := c.cc.Invoke(ctx, PostInfoService_GetPostValues_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PostInfoServiceServer is the server API for PostInfoService service.
 // All implementations must embed UnimplementedPostInfoServiceServer
 // for forward compatibility
@@ -75,6 +86,7 @@ type PostInfoServiceServer interface {
 	AddPostValue(context.Context, *AddPostValueRequest) (*AddPostValueResponse, error)
 	RemovePostValue(context.Context, *RemovePostValueRequest) (*RemovePostValueResponse, error)
 	UpdatePostValue(context.Context, *UpdatePostValueRequest) (*UpdatePostValueResponse, error)
+	GetPostValues(context.Context, *GetPostValuesRequest) (*GetPostValuesResponse, error)
 	mustEmbedUnimplementedPostInfoServiceServer()
 }
 
@@ -90,6 +102,9 @@ func (UnimplementedPostInfoServiceServer) RemovePostValue(context.Context, *Remo
 }
 func (UnimplementedPostInfoServiceServer) UpdatePostValue(context.Context, *UpdatePostValueRequest) (*UpdatePostValueResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdatePostValue not implemented")
+}
+func (UnimplementedPostInfoServiceServer) GetPostValues(context.Context, *GetPostValuesRequest) (*GetPostValuesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPostValues not implemented")
 }
 func (UnimplementedPostInfoServiceServer) mustEmbedUnimplementedPostInfoServiceServer() {}
 
@@ -158,6 +173,24 @@ func _PostInfoService_UpdatePostValue_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PostInfoService_GetPostValues_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetPostValuesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostInfoServiceServer).GetPostValues(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PostInfoService_GetPostValues_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostInfoServiceServer).GetPostValues(ctx, req.(*GetPostValuesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // PostInfoService_ServiceDesc is the grpc.ServiceDesc for PostInfoService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -176,6 +209,10 @@ var PostInfoService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdatePostValue",
 			Handler:    _PostInfoService_UpdatePostValue_Handler,
+		},
+		{
+			MethodName: "GetPostValues",
+			Handler:    _PostInfoService_GetPostValues_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

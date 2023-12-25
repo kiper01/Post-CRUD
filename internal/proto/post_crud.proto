@@ -8,6 +8,7 @@ service PostInfoService {
     rpc AddPostValue(AddPostValueRequest) returns (AddPostValueResponse);
     rpc RemovePostValue(RemovePostValueRequest) returns (RemovePostValueResponse);
     rpc UpdatePostValue(UpdatePostValueRequest) returns (UpdatePostValueResponse);
+    rpc GetPostValues(GetPostValuesRequest) returns (GetPostValuesResponse);
 }
 
 message PostValue {

@@ -14,6 +14,9 @@ type PostInfoRepository interface {
 	AddPostValue(ctx context.Context, value model.PostValue) error
 	RemovePostValue(ctx context.Context, id string) error
 	UpdatePostValue(ctx context.Context, values []model.PostValue) error
+	GetPostValues(ctx context.Context, page, pageSize int) ([]model.PostValue, int, error)
+	GetPostValuesByCodeOrId(ctx context.Context, idOrCode string) ([]model.PostValue, error)
+	GetPostValuesBySearch(ctx context.Context, search string, page, pageSize int) ([]model.PostValue, int, error)
 }
 
 type PostInfoService struct {
@@ -142,6 +145,40 @@ func (s *PostInfoService) GetPostValuesByCodeOrId(ctx context.Context, req *pb.G
 	}
 
 	return &pb.GetPostValuesByCodeOrIdResponse{
+		PostValue: pbPostValues,
+	}, nil
+}
+
+func (s *PostInfoService) GetPostValuesBySearch(ctx context.Context, req *pb.GetPostValuesBySearchRequest) (*pb.GetPostValuesBySearchResponse, error) {
+
+	pageSize := int(req.GetPageSize())
+
+	page := int(req.GetPage())
+	if page < 1 {
+		page = 1
+	}
+
+	postValues, totalCount, err := s.repo.GetPostValuesBySearch(ctx, req.GetSearch(), page, pageSize)
+	if err != nil {
+		return nil, err
+	}
+
+	var pbPostValues []*pb.PostValue
+
+	for _, pv := range postValues {
+		pbPostValues = append(pbPostValues, &pb.PostValue{
+			Id:    pv.ID,
+			Code:  pv.Code,
+			Name:  pv.Name,
+			River: pv.River,
+		})
+	}
+
+	maxPage := uint32(math.Ceil(float64(totalCount) / float64(pageSize)))
+
+	return &pb.GetPostValuesBySearchResponse{
+		Page:      uint32(page),
+		MaxPage:   maxPage,
 		PostValue: pbPostValues,
 	}, nil
 }

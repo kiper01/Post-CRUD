@@ -10,17 +10,18 @@ service PostInfoService {
     rpc UpdatePostValue(UpdatePostValueRequest) returns (UpdatePostValueResponse);
     rpc GetPostValues(GetPostValuesRequest) returns (GetPostValuesResponse);
     rpc GetPostValuesByCodeOrId(GetPostValuesByCodeOrIdRequest) returns (GetPostValuesByCodeOrIdResponse);
+    rpc GetPostValuesBySearch(GetPostValuesBySearchRequest) returns (GetPostValuesBySearchResponse);
 }
 
 message PostValue {
     string id = 1;
-    uint32 code = 2;
+    string code = 2;
     string name = 3;
     string river = 4;
 }
 
 message AddPostValueRequest {
-    uint32 code = 1;
+    string code = 1;
     string name = 2;
     string river = 3;
 }
@@ -60,4 +61,15 @@ message GetPostValuesByCodeOrIdRequest {
 }
 message GetPostValuesByCodeOrIdResponse {
     repeated PostValue post_value = 1;
+}
+
+message GetPostValuesBySearchRequest {
+    string search = 1;
+    uint32 page = 2; 
+    uint32 page_size = 3;
+}
+message GetPostValuesBySearchResponse {
+    uint32 page = 1;
+    uint32 max_page = 2;
+    repeated PostValue post_value = 3;
 }

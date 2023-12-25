@@ -2,7 +2,7 @@ package model
 
 type PostValue struct {
 	ID    string
-	Code  uint32
+	Code  string
 	Name  string
 	River string
 }

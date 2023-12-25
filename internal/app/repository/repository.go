@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"fmt"
-	"strconv"
 
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/kiper01/Post-CRUD/internal/app/model"
@@ -111,64 +110,62 @@ func (r *PostInfoRepository) GetPostValuesByCodeOrId(ctx context.Context, idOrCo
 
 	var postValues []model.PostValue
 
-	id := idOrCode
-
-	code, err := strconv.Atoi(idOrCode)
-
+	query := `SELECT id, code, name, river FROM post WHERE id = $1 OR code = $1`
+	rows, err := r.dbPool.Query(ctx, query, idOrCode)
 	if err != nil {
-		query := `SELECT id, code, name, river FROM post WHERE id = $1`
-		rows, err := r.dbPool.Query(ctx, query, id)
-		if err != nil {
-			return nil, err
-		}
-
-		defer rows.Close()
-
-		count := 0
-		for rows.Next() {
-			var pv model.PostValue
-			count++
-			if count > 1 {
-				return nil, fmt.Errorf("returned more than one post value")
-			}
-			if err := rows.Scan(&pv.ID, &pv.Code, &pv.Name, &pv.River); err != nil {
-				return nil, err
-			}
-			postValues = append(postValues, pv)
-		}
-
-		if count == 0 {
-			return nil, fmt.Errorf("no post value found with id: %s", id)
-		}
-
-		return postValues, nil
-	} else {
-		query := `SELECT id, code, name, river FROM post WHERE code = $1`
-		rows, err := r.dbPool.Query(ctx, query, code)
-		if err != nil {
-			return nil, err
-		}
-
-		defer rows.Close()
-
-		count := 0
-		for rows.Next() {
-			var pv model.PostValue
-			count++
-			if count > 1 {
-				return nil, fmt.Errorf("returned more than one post value")
-			}
-			if err := rows.Scan(&pv.ID, &pv.Code, &pv.Name, &pv.River); err != nil {
-				return nil, err
-			}
-			postValues = append(postValues, pv)
-
-		}
-
-		if count == 0 {
-			return nil, fmt.Errorf("no post value found with code: %d", code)
-		}
-
-		return postValues, nil
+		return nil, err
 	}
+
+	defer rows.Close()
+
+	count := 0
+	for rows.Next() {
+		var pv model.PostValue
+		count++
+		if count > 1 {
+			return nil, fmt.Errorf("returned more than one post value")
+		}
+		if err := rows.Scan(&pv.ID, &pv.Code, &pv.Name, &pv.River); err != nil {
+			return nil, err
+		}
+		postValues = append(postValues, pv)
+	}
+
+	if count == 0 {
+		return nil, fmt.Errorf("no post value found with id or code: %s", idOrCode)
+	}
+
+	return postValues, nil
+}
+
+func (r *PostInfoRepository) GetPostValuesBySearch(ctx context.Context, search string, page, pageSize int) ([]model.PostValue, int, error) {
+
+	var postValues []model.PostValue
+	var totalCount int
+
+	searchResult := "%" + search + "%"
+
+	query := `SELECT id, code, name, river FROM post WHERE name LIKE $1 OR river LIKE $1 OR code LIKE $1 ORDER BY code ASC LIMIT $2 OFFSET $3`
+	rows, err := r.dbPool.Query(ctx, query, searchResult, pageSize, (page-1)*pageSize)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var pv model.PostValue
+		if err := rows.Scan(&pv.ID, &pv.Code, &pv.Name, &pv.River); err != nil {
+			return nil, 0, err
+		}
+		postValues = append(postValues, pv)
+	}
+
+	countQuery := `SELECT COUNT(*) FROM post WHERE name LIKE $1 OR river LIKE $1 OR code LIKE $1`
+	err = r.dbPool.QueryRow(ctx, countQuery, searchResult).Scan(&totalCount)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return postValues, totalCount, nil
 }

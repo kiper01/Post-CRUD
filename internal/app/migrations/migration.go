@@ -3,7 +3,7 @@ package migrations
 const CreateTablePost = `
 CREATE TABLE IF NOT EXISTS post (
     id TEXT PRIMARY KEY,
-    code INTEGER NOT NULL,
+    code TEXT NOT NULL,
     name TEXT NOT NULL,
     river TEXT NOT NULL
 );

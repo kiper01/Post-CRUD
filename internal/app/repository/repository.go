@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"fmt"
+	"strconv"
 
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/kiper01/Post-CRUD/internal/app/model"
@@ -76,13 +77,13 @@ func (r *PostInfoRepository) UpdatePostValues(ctx context.Context, values []mode
 	return tx.Commit(ctx)
 }
 
-func (r *PostInfoRepository) GetPostValues(ctx context.Context, code int, page, pageSize int) ([]model.PostValue, int, error) {
+func (r *PostInfoRepository) GetPostValues(ctx context.Context, page, pageSize int) ([]model.PostValue, int, error) {
 
 	var postValues []model.PostValue
 	var totalCount int
 
-	query := `SELECT id, code, name, river FROM post WHERE code = $1 ORDER BY code DESC LIMIT $2 OFFSET $3`
-	rows, err := r.dbPool.Query(ctx, query, code, pageSize, (page-1)*pageSize)
+	query := `SELECT id, code, name, river FROM post ORDER BY code ASC LIMIT $1 OFFSET $2`
+	rows, err := r.dbPool.Query(ctx, query, pageSize, (page-1)*pageSize)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -97,8 +98,8 @@ func (r *PostInfoRepository) GetPostValues(ctx context.Context, code int, page, 
 		postValues = append(postValues, pv)
 	}
 
-	countQuery := `SELECT COUNT(*) FROM post WHERE code = $1`
-	err = r.dbPool.QueryRow(ctx, countQuery, code).Scan(&totalCount)
+	countQuery := `SELECT COUNT(*) FROM post`
+	err = r.dbPool.QueryRow(ctx, countQuery).Scan(&totalCount)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -106,34 +107,68 @@ func (r *PostInfoRepository) GetPostValues(ctx context.Context, code int, page, 
 	return postValues, totalCount, nil
 }
 
-func (r *PostInfoRepository) GetPostValuesByCodeOrId(ctx context.Context, id string, code int) ([]model.PostValue, error) {
+func (r *PostInfoRepository) GetPostValuesByCodeOrId(ctx context.Context, idOrCode string) ([]model.PostValue, error) {
 
 	var postValues []model.PostValue
 
-	query := `SELECT id, code, name, river FROM post WHERE id = $1 OR code = $2`
-	rows, err := r.dbPool.Query(ctx, query, id, code)
+	id := idOrCode
+
+	code, err := strconv.Atoi(idOrCode)
+
 	if err != nil {
-		return nil, err
-	}
-
-	defer rows.Close()
-
-	count := 0
-	for rows.Next() {
-		var pv model.PostValue
-		if count > 1 {
-			return nil, fmt.Errorf("returned more than one post value")
-		}
-		if err := rows.Scan(&pv.ID, &pv.Code, &pv.Name, &pv.River); err != nil {
+		query := `SELECT id, code, name, river FROM post WHERE id = $1`
+		rows, err := r.dbPool.Query(ctx, query, id)
+		if err != nil {
 			return nil, err
 		}
-		postValues = append(postValues, pv)
-		count++
-	}
 
-	if count == 0 {
-		return nil, fmt.Errorf("no post value found with id: %s or code: %d", id, code)
-	}
+		defer rows.Close()
 
-	return postValues, nil
+		count := 0
+		for rows.Next() {
+			var pv model.PostValue
+			count++
+			if count > 1 {
+				return nil, fmt.Errorf("returned more than one post value")
+			}
+			if err := rows.Scan(&pv.ID, &pv.Code, &pv.Name, &pv.River); err != nil {
+				return nil, err
+			}
+			postValues = append(postValues, pv)
+		}
+
+		if count == 0 {
+			return nil, fmt.Errorf("no post value found with id: %s", id)
+		}
+
+		return postValues, nil
+	} else {
+		query := `SELECT id, code, name, river FROM post WHERE code = $1`
+		rows, err := r.dbPool.Query(ctx, query, code)
+		if err != nil {
+			return nil, err
+		}
+
+		defer rows.Close()
+
+		count := 0
+		for rows.Next() {
+			var pv model.PostValue
+			count++
+			if count > 1 {
+				return nil, fmt.Errorf("returned more than one post value")
+			}
+			if err := rows.Scan(&pv.ID, &pv.Code, &pv.Name, &pv.River); err != nil {
+				return nil, err
+			}
+			postValues = append(postValues, pv)
+
+		}
+
+		if count == 0 {
+			return nil, fmt.Errorf("no post value found with code: %d", code)
+		}
+
+		return postValues, nil
+	}
 }

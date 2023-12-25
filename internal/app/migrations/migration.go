@@ -16,7 +16,7 @@ BEGIN
         WHERE conname = 'post_unique_constraint'
     ) THEN
         ALTER TABLE post
-        ADD CONSTRAINT post_unique_constraint UNIQUE (code, name, river);
+        ADD CONSTRAINT post_unique_constraint UNIQUE (code);
     END IF;
 END
 $$;

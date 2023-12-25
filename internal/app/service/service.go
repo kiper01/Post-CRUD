@@ -91,14 +91,14 @@ func (s *PostInfoService) UpdatePostValue(ctx context.Context, req *pb.UpdatePos
 
 func (s *PostInfoService) GetPostValues(ctx context.Context, req *pb.GetPostValuesRequest) (*pb.GetPostValuesResponse, error) {
 
-	pageSize := 50
+	pageSize := int(req.GetPageSize())
 
 	page := int(req.GetPage())
 	if page < 1 {
 		page = 1
 	}
 
-	postValues, totalCount, err := s.repo.GetPostValues(ctx, int(req.GetCode()), page, pageSize)
+	postValues, totalCount, err := s.repo.GetPostValues(ctx, page, pageSize)
 	if err != nil {
 		return nil, err
 	}
@@ -125,7 +125,7 @@ func (s *PostInfoService) GetPostValues(ctx context.Context, req *pb.GetPostValu
 
 func (s *PostInfoService) GetPostValuesByCodeOrId(ctx context.Context, req *pb.GetPostValuesByCodeOrIdRequest) (*pb.GetPostValuesByCodeOrIdResponse, error) {
 
-	postValues, err := s.repo.GetPostValuesByCodeOrId(ctx, req.GetId(), int(req.GetCode()))
+	postValues, err := s.repo.GetPostValuesByCodeOrId(ctx, req.GetIdOrCode())
 	if err != nil {
 		return nil, err
 	}

@@ -46,8 +46,8 @@ message UpdatePostValueResponse {
 }
 
 message GetPostValuesRequest {
-    uint32 code = 1;
-    uint32 page = 2; 
+    uint32 page = 1; 
+    uint32 page_size = 2;
 }
 message GetPostValuesResponse {
     uint32 page = 1;
@@ -56,8 +56,7 @@ message GetPostValuesResponse {
 }
 
 message GetPostValuesByCodeOrIdRequest {
-    string id = 1;
-    uint32 code = 2; 
+    string id_or_code = 1;
 }
 message GetPostValuesByCodeOrIdResponse {
     repeated PostValue post_value = 1;

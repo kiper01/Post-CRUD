@@ -122,3 +122,26 @@ func (s *PostInfoService) GetPostValues(ctx context.Context, req *pb.GetPostValu
 		PostValue: pbPostValues,
 	}, nil
 }
+
+func (s *PostInfoService) GetPostValuesByCodeOrId(ctx context.Context, req *pb.GetPostValuesByCodeOrIdRequest) (*pb.GetPostValuesByCodeOrIdResponse, error) {
+
+	postValues, err := s.repo.GetPostValuesByCodeOrId(ctx, req.GetId(), int(req.GetCode()))
+	if err != nil {
+		return nil, err
+	}
+
+	var pbPostValues []*pb.PostValue
+
+	for _, pv := range postValues {
+		pbPostValues = append(pbPostValues, &pb.PostValue{
+			Id:    pv.ID,
+			Code:  pv.Code,
+			Name:  pv.Name,
+			River: pv.River,
+		})
+	}
+
+	return &pb.GetPostValuesByCodeOrIdResponse{
+		PostValue: pbPostValues,
+	}, nil
+}

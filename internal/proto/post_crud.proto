@@ -9,6 +9,7 @@ service PostInfoService {
     rpc RemovePostValue(RemovePostValueRequest) returns (RemovePostValueResponse);
     rpc UpdatePostValue(UpdatePostValueRequest) returns (UpdatePostValueResponse);
     rpc GetPostValues(GetPostValuesRequest) returns (GetPostValuesResponse);
+    rpc GetPostValuesByCodeOrId(GetPostValuesByCodeOrIdRequest) returns (GetPostValuesByCodeOrIdResponse);
 }
 
 message PostValue {
@@ -52,4 +53,12 @@ message GetPostValuesResponse {
     uint32 page = 1;
     uint32 max_page = 2;
     repeated PostValue post_value = 3;
+}
+
+message GetPostValuesByCodeOrIdRequest {
+    string id = 1;
+    uint32 code = 2; 
+}
+message GetPostValuesByCodeOrIdResponse {
+    repeated PostValue post_value = 1;
 }

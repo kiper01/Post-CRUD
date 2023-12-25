@@ -19,10 +19,11 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	PostInfoService_AddPostValue_FullMethodName    = "/postcrud.PostInfoService/AddPostValue"
-	PostInfoService_RemovePostValue_FullMethodName = "/postcrud.PostInfoService/RemovePostValue"
-	PostInfoService_UpdatePostValue_FullMethodName = "/postcrud.PostInfoService/UpdatePostValue"
-	PostInfoService_GetPostValues_FullMethodName   = "/postcrud.PostInfoService/GetPostValues"
+	PostInfoService_AddPostValue_FullMethodName            = "/postcrud.PostInfoService/AddPostValue"
+	PostInfoService_RemovePostValue_FullMethodName         = "/postcrud.PostInfoService/RemovePostValue"
+	PostInfoService_UpdatePostValue_FullMethodName         = "/postcrud.PostInfoService/UpdatePostValue"
+	PostInfoService_GetPostValues_FullMethodName           = "/postcrud.PostInfoService/GetPostValues"
+	PostInfoService_GetPostValuesByCodeOrId_FullMethodName = "/postcrud.PostInfoService/GetPostValuesByCodeOrId"
 )
 
 // PostInfoServiceClient is the client API for PostInfoService service.
@@ -33,6 +34,7 @@ type PostInfoServiceClient interface {
 	RemovePostValue(ctx context.Context, in *RemovePostValueRequest, opts ...grpc.CallOption) (*RemovePostValueResponse, error)
 	UpdatePostValue(ctx context.Context, in *UpdatePostValueRequest, opts ...grpc.CallOption) (*UpdatePostValueResponse, error)
 	GetPostValues(ctx context.Context, in *GetPostValuesRequest, opts ...grpc.CallOption) (*GetPostValuesResponse, error)
+	GetPostValuesByCodeOrId(ctx context.Context, in *GetPostValuesByCodeOrIdRequest, opts ...grpc.CallOption) (*GetPostValuesByCodeOrIdResponse, error)
 }
 
 type postInfoServiceClient struct {
@@ -79,6 +81,15 @@ func (c *postInfoServiceClient) GetPostValues(ctx context.Context, in *GetPostVa
 	return out, nil
 }
 
+func (c *postInfoServiceClient) GetPostValuesByCodeOrId(ctx context.Context, in *GetPostValuesByCodeOrIdRequest, opts ...grpc.CallOption) (*GetPostValuesByCodeOrIdResponse, error) {
+	out := new(GetPostValuesByCodeOrIdResponse)
+	err := c.cc.Invoke(ctx, PostInfoService_GetPostValuesByCodeOrId_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PostInfoServiceServer is the server API for PostInfoService service.
 // All implementations must embed UnimplementedPostInfoServiceServer
 // for forward compatibility
@@ -87,6 +98,7 @@ type PostInfoServiceServer interface {
 	RemovePostValue(context.Context, *RemovePostValueRequest) (*RemovePostValueResponse, error)
 	UpdatePostValue(context.Context, *UpdatePostValueRequest) (*UpdatePostValueResponse, error)
 	GetPostValues(context.Context, *GetPostValuesRequest) (*GetPostValuesResponse, error)
+	GetPostValuesByCodeOrId(context.Context, *GetPostValuesByCodeOrIdRequest) (*GetPostValuesByCodeOrIdResponse, error)
 	mustEmbedUnimplementedPostInfoServiceServer()
 }
 
@@ -105,6 +117,9 @@ func (UnimplementedPostInfoServiceServer) UpdatePostValue(context.Context, *Upda
 }
 func (UnimplementedPostInfoServiceServer) GetPostValues(context.Context, *GetPostValuesRequest) (*GetPostValuesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPostValues not implemented")
+}
+func (UnimplementedPostInfoServiceServer) GetPostValuesByCodeOrId(context.Context, *GetPostValuesByCodeOrIdRequest) (*GetPostValuesByCodeOrIdResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPostValuesByCodeOrId not implemented")
 }
 func (UnimplementedPostInfoServiceServer) mustEmbedUnimplementedPostInfoServiceServer() {}
 
@@ -191,6 +206,24 @@ func _PostInfoService_GetPostValues_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PostInfoService_GetPostValuesByCodeOrId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetPostValuesByCodeOrIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostInfoServiceServer).GetPostValuesByCodeOrId(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PostInfoService_GetPostValuesByCodeOrId_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostInfoServiceServer).GetPostValuesByCodeOrId(ctx, req.(*GetPostValuesByCodeOrIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // PostInfoService_ServiceDesc is the grpc.ServiceDesc for PostInfoService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -213,6 +246,10 @@ var PostInfoService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetPostValues",
 			Handler:    _PostInfoService_GetPostValues_Handler,
+		},
+		{
+			MethodName: "GetPostValuesByCodeOrId",
+			Handler:    _PostInfoService_GetPostValuesByCodeOrId_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

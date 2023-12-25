@@ -105,3 +105,35 @@ func (r *PostInfoRepository) GetPostValues(ctx context.Context, code int, page, 
 
 	return postValues, totalCount, nil
 }
+
+func (r *PostInfoRepository) GetPostValuesByCodeOrId(ctx context.Context, id string, code int) ([]model.PostValue, error) {
+
+	var postValues []model.PostValue
+
+	query := `SELECT id, code, name, river FROM post WHERE id = $1 OR code = $2`
+	rows, err := r.dbPool.Query(ctx, query, id, code)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	count := 0
+	for rows.Next() {
+		var pv model.PostValue
+		if count > 1 {
+			return nil, fmt.Errorf("returned more than one post value")
+		}
+		if err := rows.Scan(&pv.ID, &pv.Code, &pv.Name, &pv.River); err != nil {
+			return nil, err
+		}
+		postValues = append(postValues, pv)
+		count++
+	}
+
+	if count == 0 {
+		return nil, fmt.Errorf("no post value found with id: %s or code: %d", id, code)
+	}
+
+	return postValues, nil
+}

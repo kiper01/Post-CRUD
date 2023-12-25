@@ -45,9 +45,7 @@ message UpdatePostValueResponse {
 
 message GetPostValuesRequest {
     uint32 code = 1;
-    string name = 2;
-    string river = 3;
-    uint32 page = 4; 
+    uint32 page = 2; 
 }
 message GetPostValuesResponse {
     uint32 page = 1;
